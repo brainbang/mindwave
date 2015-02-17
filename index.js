@@ -9,7 +9,10 @@ var Mindwave = module.exports = function(){
 
 Mindwave.prototype.__proto__ = EventEmitter.prototype;
 
-Mindwave.prototype.connect = function(baud, port){
+Mindwave.prototype.connect = function(port, baud){
+	if (!baud){
+		baud = 9600;
+	}
 	var self = this;
 	if (baud !== 9600 && baud !== 57600){
 		return this.emit('error', 'Invalid baud. Set to 9600 or 57600');
@@ -18,7 +21,7 @@ Mindwave.prototype.connect = function(baud, port){
 	self.port = port;
 
 	// TODO: switch baud code if 57600 for higher res data
-	// 
+	// http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#thinkgear_command_bytes
 
 	self.serialPort = new SerialPort(self.port, {baudrate: self.baud}, false);
 	self.serialPort.open(function(){

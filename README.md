@@ -33,11 +33,13 @@ mw.on('wave', function(wave){
 	console.log('wave', wave);
 });
 
-mw.connect(9600, '/dev/cu.MindWaveMobile-DevA');
+mw.connect('/dev/cu.MindWaveMobile-DevA');
 ```
 
 ## TODO
 
 - Currently, only 9600 baud is supported, but eventually I will add support for high-resolution data (57600.)
 - I have only tested on mac, and will need to add COM-port detection stuff for everyone, eventually.
-- I need to add anable/disable stuff so you can ignore certain types of signals (for speed)
+- I need to add enable/disable stuff so you can ignore certain types of signals (for speed)
+- raw waves
+- [more opcodes](http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#data_payload_structure)
