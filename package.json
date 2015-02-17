@@ -1,6 +1,6 @@
 {
   "name": "mindwave",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "main": "index.js",
   "repository": {
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/authonice/mindwave",
   "dependencies": {
+    "buffy": "0.0.5",
     "serialport": "^1.5.0"
   }
 }
