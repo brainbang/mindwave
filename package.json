@@ -1,6 +1,6 @@
 {
   "name": "mindwave",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "main": "index.js",
   "repository": {
