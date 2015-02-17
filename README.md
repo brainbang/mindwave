@@ -1,6 +1,8 @@
 # mindwave
 A cross-platform driver for bluetooth Neurosky Mindwave headsets.
 
+[![npm](https://nodei.co/npm/mindwave.png)](https://www.npmjs.com/package/mindwave)
+
 The SDK doesn't support linux and I don't like having a program loaded to forward stuff, so I wrote one that supports everyone just when you need it, in nodejs.
 
 ## usage
