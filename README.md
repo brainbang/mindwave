@@ -1,10 +1,6 @@
 # mindwave
 A cross-platform driver for bluetooth Neurosky Mindwave headsets.
 
-[![npm](https://nodei.co/npm/mindwave.png)](https://www.npmjs.com/package/mindwave)
-
-The SDK doesn't support linux and I don't like having a program loaded to forward stuff, so I wrote one that supports everyone just when you need it, in nodejs.
-
 ## usage
 
 ```js
@@ -31,9 +27,11 @@ mw.on('blink', function(blink){
 	console.log('blink', blink);
 });
 
-mw.on('wave', function(wave){
-	console.log('wave', wave);
-});
+// These are the raw EEG data
+// They come in at about 512Hz
+// mw.on('wave', function(wave){
+// 	console.log('wave', wave);
+// });
 
 mw.connect('/dev/cu.MindWaveMobile-DevA');
 ```
@@ -43,5 +41,4 @@ mw.connect('/dev/cu.MindWaveMobile-DevA');
 - Currently, only 9600 baud is supported, but eventually I will add support for high-resolution data (57600.)
 - I have only tested on mac, and will need to add COM-port detection stuff for everyone, eventually.
 - I need to add enable/disable stuff so you can ignore certain types of signals (for speed)
-- raw waves
 - [more opcodes](http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#data_payload_structure)
