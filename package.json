@@ -1,25 +1,27 @@
 {
   "name": "mindwave",
   "version": "0.0.3",
+  "author": {
+    "email": "konsumer@jetboystudio.com",
+    "name": "David Konsumer"
+  },
+  "dependencies": {
+    "buffy": "0.0.5",
+    "serialport": "^4.0.1"
+  },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
+  "keywords": [
+    "brainwave",
+    "mindwave",
+    "neurosky"
+  ],
+  "license": "MIT",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/brainbang/mindwave.git"
+    "url": "https://github.com/elsehow/mindwave.git"
   },
-  "keywords": [
-    "neurosky",
-    "mindwave",
-    "brainwave"
-  ],
-  "author": "David Konsumer <konsumer@jetboystudio.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/brainbang/mindwave/issues"
-  },
-  "homepage": "https://github.com/brainbang/mindwave",
-  "dependencies": {
-    "buffy": "0.0.5",
-    "serialport": "^1.5.0"
+  "devDependencies": {
+    "kefir": "^3.3.0"
   }
 }

@@ -1,7 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
-var serialPort = require('serialport');
+var SerialPort = require('serialport');
 var buffy = require('buffy');
-var SerialPort = serialPort.SerialPort;
 
 var Mindwave = module.exports = function(){
 	EventEmitter.call(this);
@@ -23,7 +22,10 @@ Mindwave.prototype.connect = function(port, baud){
 	// TODO: switch baud code if 57600 for higher res data
 	// http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#thinkgear_command_bytes
 
-	self.serialPort = new SerialPort(self.port, {baudrate: self.baud}, false);
+	self.serialPort = new SerialPort(self.port, {
+    baudrate: self.baud,
+    autoOpen: false,
+  });
 	self.serialPort.open(function(){
 		self.emit('connect');
 		self.serialPort.on('data', function(data){
@@ -47,6 +49,10 @@ Mindwave.prototype.parse = function(data){
 	while (reader.bytesAhead() > 2) {
 		if (reader.uint8() === BT_SYNC && reader.uint8() === BT_SYNC) {
 			var len = reader.uint8();
+      if (len > 170)
+        return
+      if(len === BT_SYNC)
+        break
 			var payload = reader.buffer(len);
 			this.parsePacket(payload);
 		}
@@ -125,5 +131,4 @@ var CODE_MEDITATION = 0x05;      // MEDITATION eSense 0-100
 var CODE_BLINK = 0x16;           // BLINK strength 0-255
 var CODE_WAVE = 0x80;            // RAW wave value: 2-byte big-endian 2s-complement
 var CODE_ASIC_EEG = 0x83;        // ASIC EEG POWER 8 3-byte big-endian integers
-
 

@@ -1,28 +1,38 @@
 var Mindwave = require('./index.js');
+var kefir = require('kefir')
 var mw = new Mindwave();
 
-mw.on('eeg', function(eeg){
-	console.log('eeg', eeg);
-});
+function toObj (objs) {
+  return objs.reduce(function (acc,o) {
+    var k = Object.keys(o)[0]
+    acc[k] = o[k]
+    return acc
+  }, {})
+}
 
-mw.on('signal', function(signal){
-	console.log('signal', signal);
-});
+function prop (p) {
+  return (v) => {
+    var r = {}
+    r[p] = v
+    return r
+  }
+}
 
-mw.on('attention', function(attention){
-	console.log('attention', attention);
-});
+function asProp (ev) {
+  return kefir.fromEvents(mw, ev).map(prop(ev))
+}
 
-mw.on('meditation', function(meditation){
-	console.log('meditation', meditation);
-});
+var waveS = kefir.fromEvents(mw, 'wave').bufferWithCount(256).map(prop('wave'))
 
-mw.on('blink', function(blink){
-	console.log('blink', blink);
-});
+var outS = kefir.zip([
+  asProp('eeg'),
+  asProp('signal'),
+  asProp('meditation'),
+  asProp('attention'),
+  //waveS,
+]).map(toObj)
 
-mw.on('wave', function(wave){
-	console.log('wave', wave);
-});
-
+console.log('connecting')
 mw.connect('/dev/cu.MindWaveMobile-DevA');
+
+outS.log()
