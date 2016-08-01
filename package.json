@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/authonice/mindwave.git"
+    "url": "https://github.com/brainbang/mindwave.git"
   },
   "keywords": [
     "neurosky",
@@ -15,9 +15,9 @@
   "author": "David Konsumer <konsumer@jetboystudio.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/authonice/mindwave/issues"
+    "url": "https://github.com/brainbang/mindwave/issues"
   },
-  "homepage": "https://github.com/authonice/mindwave",
+  "homepage": "https://github.com/brainbang/mindwave",
   "dependencies": {
     "buffy": "0.0.5",
     "serialport": "^1.5.0"
