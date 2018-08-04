@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "buffy": "0.0.5",
-    "serialport": "^4.0.1"
+    "serialport": "^6.2.2"
   },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "keywords": [
