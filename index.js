@@ -24,7 +24,7 @@ Mindwave.prototype.connect = function (port, baud) {
   // http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#thinkgear_command_bytes
 
   self.serialPort = new SerialPort(self.port, {
-    baudrate: self.baud,
+    baudRate: self.baud,
     autoOpen: false
   })
   self.serialPort.open(function () {
