@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "buffy": "0.0.5",
-    "serialport": "^6.2.2"
+    "serialport": "^9.0.7"
   },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "keywords": [
@@ -19,9 +19,9 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elsehow/mindwave.git"
+    "url": "https://github.com/brainbang/mindwave.git"
   },
   "devDependencies": {
-    "kefir": "^3.3.0"
+    "kefir": "^3.8.8"
   }
 }
