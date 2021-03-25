@@ -1,7 +1,7 @@
 # mindwave
 A cross-platform driver for bluetooth Neurosky Mindwave headsets.
 
-If you'd like to see some excample-usage, checkout [mindgraph](https://github.com/brainbang/mindgraph)
+If you'd like to see an example project, check out [mindgraph](https://github.com/brainbang/mindgraph).
 
 ## usage
 
