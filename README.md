@@ -18,7 +18,8 @@ This library uses lower-level serial-over-bluetooth to communicate. For it to wo
 - Put headset in "pairing mode" (hold power up until it double-flashes, but before it turns red)
 - Run `gort scan bluetooth` to get mac-address of "MindWave Mobile". Mine was `20:68:9D:4C:0E:93`, but yours might be different
 - Run `sudo gort bluetooth serial 20:68:9D:4C:0E:93` (with your address) to connect headset to a virtual serial port. In my case, it connected to `/dev/rfcomm0`
-- any code that uses this needs root-permissions. I will work on some udev rules to fix this, as soon as I figure it out 
+- make sure your user is in `dialout` or whatever group owns the device. `sudo adduser konsumer dialout` did that for me (requires re-login.)
+- I will work on some udev rules to automate the rfcomm part, as soon as I figure it out
 
 #### windows
 
