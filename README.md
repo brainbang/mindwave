@@ -80,3 +80,4 @@ mw.connect('/dev/rfcomm0')
 - wrap `connect` function for [web bluetooth](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API) and make it load serialport on-demand (will help with electron/etc packaging too, sicne it can use webapi)
 - modern syntax (use `Buffer` and get rid of buffy)
 - pre-scale values so they work better together in a graph. maybe float:0.0 - 100.0?
+- byte-capture mode for doing comparisons with C client (and also write C client that can compare)
