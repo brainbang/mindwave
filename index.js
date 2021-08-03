@@ -25,6 +25,7 @@ class Mindwave extends EventEmitter {
 
     // TODO: switch baud code if 57600 for higher res data
     // TODO: handle options to ignore differnt types of data
+    // TODO: check CRC
     // http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#thinkgear_command_bytes
 
     this.serialPort = new SerialPort(this.port, {
