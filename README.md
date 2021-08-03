@@ -81,3 +81,4 @@ mw.connect('/dev/rfcomm0')
 - modern syntax (use `Buffer` and get rid of buffy)
 - pre-scale values so they work better together in a graph. maybe float:0.0 - 100.0?
 - byte-capture mode for doing comparisons with C client (and also write C client that can compare)
+- look into [node-bluetooth](https://github.com/song940/node-bluetooth) for simpler/better direct serial connection

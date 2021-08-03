@@ -1,0 +1,16 @@
+<h1>This not done, just testing out ideas with Bluetooth Web API</h1>
+
+<button id="getDevice">CHOOSE DEVICE</button>
+
+<script>
+// https://googlechrome.github.io/samples/web-bluetooth/discover-services-and-characteristics.html
+// TODO: look at buffer shim for browser, then port code to buffers: https://github.com/feross/buffer
+
+const button = document.getElementById('getDevice')
+button.onclick = async () => {
+  const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'MindWave Mobile' }] })
+  button.style.display = 'none'
+  window.alert('check the console')
+  console.log(device)
+}
+</script>
