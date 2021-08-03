@@ -65,6 +65,9 @@ mw.on('blink', (blink) => {
 // common device for mac
 // mw.connect('/dev/cu.MindWaveMobile-DevA')
 
+// untested, but I think it's like this on windows:
+// mw.connect('COM4')
+
 // linux
 mw.connect('/dev/rfcomm0')
 ```
@@ -72,7 +75,8 @@ mw.connect('/dev/rfcomm0')
 ## TODO
 
 - Currently, only 9600 baud is supported, but eventually I will add support for high-resolution data (57600.)
-- I have only tested on mac, and will need to add COM-port detection stuff for everyone, eventually.
-- I need to add enable/disable stuff so you can ignore certain types of signals (for speed)
 - [more opcodes](http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#data_payload_structure)
-- seperate packet-parsing code. It might be possible to use bluetooth web apis.
+- More cross-platform testing, try to get around having to setup rfcomm/thinkgear/etc
+- wrap `connect` function for [web bluetooth](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API) and make it load serialport on-demand (will help with electron/etc packaging too, sicne it can use webapi)
+- modern syntax (use `Buffer` and get rid of buffy)
+- pre-scale values so they work better together in a graph. maybe float:0.0 - 100.0?
