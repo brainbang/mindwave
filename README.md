@@ -61,7 +61,7 @@ service mindwave status
 
 #### windows
 
-I haven't tested as much here, but it should work with built-in windows stuff, setting up SPP (serial over bluetooth) and pairing. You can read more about the process [here](http://support.neurosky.com/kb/mindwave-mobile-2/cant-pair-mindwave-mobile-2-with-computer-or-mobile-device). In your device manager, under "Advanced" look for the COM port it sets up, and use that in your code.
+I haven't tested as much here, but it should work with built-in windows stuff, setting up SPP (serial over bluetooth) and pairing. You can read more about the process [here](http://support.neurosky.com/kb/mindwave-mobile-2/cant-pair-mindwave-mobile-2-with-computer-or-mobile-device). In your device manager, under "Advanced" look for the COM port it sets up, and use that in your code. On mine, it was `COM4`.
 
 #### mac
 
