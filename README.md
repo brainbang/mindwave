@@ -52,7 +52,7 @@ sudo systemctl start mindwave
 
 Make sure to change `20:68:9D:4C:0E:93` to whatever you discovered in `gort scan bluetooth`. After all this, it should work anytime the mindwave is turned on (even outside of pairing-mode.) It is contantly restarting gort (every 5s) if it doesn't find the headset, but it has pretty low overhead.
 
-Any time you can get the status:
+At any time you can get the status:
 
 ```
 service mindwave status
