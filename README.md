@@ -61,11 +61,11 @@ service mindwave status
 
 #### windows
 
-> TODO: I need to test, but it should work with the [official software](http://developer.neurosky.com/docs/doku.php?id=thinkgear_connector_tgc).
+I haven't tested as much here, but it should work with built-in windows stuff, setting up SPP (serial over bluetooth) and pairing. You can read more about the process [here](http://support.neurosky.com/kb/mindwave-mobile-2/cant-pair-mindwave-mobile-2-with-computer-or-mobile-device).
 
 #### mac
 
-The easiest way is to install the [official software](http://developer.neurosky.com/docs/doku.php?id=thinkgear_connector_tgc). Get it all working normally, and your serial-device will be something like `/dev/cu.MindWaveMobile-DevA`. Make sure to set this at the bottom of the examples, instead of `/dev/rfcomm0`.
+Install the [official mac driver](http://download.neurosky.com/public/Products/MindWave%20headset/RF%20driver%20for%20Mac/MindWaveDriver5.1.pkg). You can read more about it [here](http://support.neurosky.com/kb/mindwave/mindwave-cant-work-on-mac-osx-1011-or-higher). Your serial-device will be something like `/dev/tty.MindWaveMobile-DevA` or sometimes `/dev/cu.MindWaveMobile-DevA` works better (it seemed to have issues rapidly disconnecting and connecting, but changing devices would sometimes fix that.) Make sure to set this at the bottom of the examples, instead of `/dev/rfcomm0`. Put it in pairing-mode and start your program, and it should go solid-blue and output data.
 
 
 ### code

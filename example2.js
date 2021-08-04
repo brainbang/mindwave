@@ -64,7 +64,7 @@ mw.on('attention', (attention) => setData({ attention }))
 mw.on('meditation', (meditation) => setData({ meditation }))
 
 // common device for mac
-// mw.connect('/dev/cu.MindWaveMobile-DevA')
+// mw.connect('/dev/tty.MindWaveMobile-DevA')
 
 // linux
 mw.connect('/dev/rfcomm0')
