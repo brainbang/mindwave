@@ -10,7 +10,7 @@ There are 2 examples included, and if you'd like to see an example GUI project, 
 
 ### hardware
 
-This library uses lower-level serial-over-bluetooth to communicate. For it to work, you will need to pair with it. It should be noted, you can put the headset in pairing-mode by holding up the power until it double-blinks blue (before it turns red.) Solid-blue means you have a bluetooth/serial connection.
+This library uses lower-level serial-over-bluetooth to communicate. For it to work, you will need to pair with it. It should be noted, you can put the headset in pairing-mode by holding up the power until it double-blinks blue (before it turns red.) Solid-blue means you have a working bluetooth/serial connection.
 
 #### linux
 
@@ -61,11 +61,11 @@ service mindwave status
 
 #### windows
 
-I haven't tested as much here, but it should work with built-in windows stuff, setting up SPP (serial over bluetooth) and pairing. You can read more about the process [here](http://support.neurosky.com/kb/mindwave-mobile-2/cant-pair-mindwave-mobile-2-with-computer-or-mobile-device).
+I haven't tested as much here, but it should work with built-in windows stuff, setting up SPP (serial over bluetooth) and pairing. You can read more about the process [here](http://support.neurosky.com/kb/mindwave-mobile-2/cant-pair-mindwave-mobile-2-with-computer-or-mobile-device). In your device manager, under "Advanced" look for the COM port it sets up, and use that in your code.
 
 #### mac
 
-Install the [official mac driver](http://download.neurosky.com/public/Products/MindWave%20headset/RF%20driver%20for%20Mac/MindWaveDriver5.1.pkg). You can read more about it [here](http://support.neurosky.com/kb/mindwave/mindwave-cant-work-on-mac-osx-1011-or-higher). Your serial-device will be something like `/dev/tty.MindWaveMobile-DevA` or sometimes `/dev/cu.MindWaveMobile-DevA` works better (it seemed to have issues rapidly disconnecting and connecting, but changing devices would sometimes fix that.) Make sure to set this at the bottom of the examples, instead of `/dev/rfcomm0`. Put it in pairing-mode and start your program, and it should go solid-blue and output data.
+Install the [official mac driver](http://download.neurosky.com/public/Products/MindWave%20headset/RF%20driver%20for%20Mac/MindWaveDriver5.1.pkg). You can read more about it [here](http://support.neurosky.com/kb/mindwave/mindwave-cant-work-on-mac-osx-1011-or-higher). Your serial-device will be something like `/dev/tty.MindWaveMobile-DevA` or sometimes `/dev/cu.MindWaveMobile-DevA` works better (it seemed to have issues rapidly disconnecting and connecting, but changing devices would sometimes fix that.) Make sure to set this at the bottom of the examples, instead of `/dev/rfcomm0`. Put it in pairing-mode and pair with it, then start your program, and it should go solid-blue and start outputting data.
 
 
 ### code
@@ -115,8 +115,8 @@ mw.connect('/dev/rfcomm0')
 
 - Currently, only 9600 baud is supported, but eventually I will add support for high-resolution data (57600.)
 - [more opcodes](http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#data_payload_structure)
-- More cross-platform testing, try to get around having to setup rfcomm/thinkgear/etc (maybe with node bluetooth connection lib)
+- More cross-platform testing, try to get around having to setup driver (maybe with node bluetooth serial lib & web bluetooth API)
 - wrap `connect` function for [web bluetooth](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API) and make it load serialport on-demand (will help with electron/etc packaging too, since it can use webapi) make an example "offline web app" for mobile, and a [neutrolino](https://github.com/neutralinojs/neutralinojs) or electron app for desktop
 - modern syntax (use `Buffer` and get rid of buffy)
 - pre-scale values so they work better together in a graph. maybe float:0.0 - 100.0?
-- write comparison C function for parsing buffers, and compile for wasm. DO comparioson-tests on real traffic from device. I can verify my js code this way (using reference C implementation in docs) and it might improve performance for js (basically just hook native or web bluetooth API to parsing wasm.)
+- write comparison C function for parsing buffers, and compile for wasm. Do comparioson-tests on real traffic from device. I can verify my js code this way (using reference C implementation in docs) and it might improve performance for js (basically just hook native or web bluetooth API to parsing wasm.) Once I can verify they match, I could try another language I like more, like assmeblyscript or rust (and test them against the js.)
