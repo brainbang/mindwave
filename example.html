@@ -10,7 +10,10 @@ const button = document.getElementById('getDevice')
 button.onclick = async () => {
   const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'MindWave Mobile' }] })
   button.style.display = 'none'
-  window.alert('check the console')
   console.log(device)
+  const server = await device.gatt.connect()
+  const service = await server.getPrimaryService(0xff0f)
+  const characteristic = await service.getCharacteristic(0xfffc)
+  console.log({ server, service, characteristic })
 }
 </script>

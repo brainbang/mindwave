@@ -6,7 +6,10 @@
     "name": "David Konsumer"
   },
   "dependencies": {
+    "@abandonware/bluetooth-hci-socket": "*",
+    "ble-serial": "^0.5.0",
     "buffy": "0.0.5",
+    "emitonoff": "^0.1.0",
     "serialport": "^9.0.7"
   },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
