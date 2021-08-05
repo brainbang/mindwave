@@ -13,13 +13,16 @@
   "module": "./dist/mindwave.module.js",
   "unpkg": "./dist/mindwave.umd.js",
   "dependencies": {
-    "emitonoff": "^0.1.0",
-    "serialport": "^9.2.0"
+    "@serialport/bindings": "^9.2.0",
+    "@serialport/parser-delimiter": "^9.0.7",
+    "@serialport/stream": "^9.0.7",
+    "buffy": "^0.0.5",
+    "emitonoff": "^0.1.0"
   },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "keywords": [
     "brainwave",
-    "mindwave",
+    "mindwav2e",
     "neurosky"
   ],
   "license": "MIT",

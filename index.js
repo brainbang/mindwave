@@ -96,26 +96,8 @@ export class Mindwave {
 
   // turn a valid buffer of commands into an object
   // this discards everything outside of the packet
-  static parse (buffer) {
-    // find message-boundries
-    let msg
-    let check
-    let length
-    for (let i = 0; i < buffer.length; i++) {
-      if (buffer[i] === SYNC && buffer[i + 1] === SYNC) {
-        length = buffer[i + 2]
-        msg = buffer.slice(i + 3, i + 3 + length)
-        check = buffer[i + 3 + length]
-        break
-      }
-    }
-
-    // make sure it checksums
-    if (!msg || check !== Mindwave.checksum(msg)) {
-      return { length: 0 }
-    }
-
-    const out = { length }
+  static parse (msg) {
+    const out = {}
     while (msg.length) {
       // interim buffer for calculating bytes
       let b
@@ -247,30 +229,31 @@ export class Mindwave {
 
     this.port = port
 
-    const SerialPort = (await import('serialport')).default
-    this.serialPort = new SerialPort(port, {
-      baudRate: this.baud,
-      autoOpen: false
-    })
+    const SerialPort = (await import('@serialport/stream')).default
+    SerialPort.Binding = (await import('@serialport/bindings')).default
+    const buffy = (await import('buffy')).default
 
-    this.serialPort.open(() => {
-      this.emit('connect')
-      this.serialPort.on('data', (data) => {
-        const { length, ...msg } = Mindwave.parse(data)
-        this.emit('data', msg)
-        Object.keys(msg).forEach(k => {
-          this.emit(k, msg[k])
+    this.serialPort = new SerialPort(port, { baudRate: this.baud, autoOpen: false })
+
+    this.serialPort.open((err) => {
+      if (err) {
+        this.emit('errpr', `Error opening ${port}`)
+      } else {
+        this.emit('connect')
+        const reader = buffy.createReader()
+
+        this.serialPort.on('data', data => {
+          console.log('SERIAL')
+          reader.write(data)
         })
-      })
-    })
-  }
 
-  disconnectSerial () {
-    this.serialPort.pause()
-    this.serialPort.flush(() => {
-      this.serialPort.close(() => {
-        this.emit('disconnect')
-      })
+        reader.on('data', function () {
+          console.log('READER')
+          while (reader.bytesAhead() >= 2) {
+            console.log(reader.uint8(), reader.uint8())
+          }
+        })
+      }
     })
   }
 
@@ -296,5 +279,19 @@ export class Mindwave {
     }
 
     return this.emit('error', 'Unknown path-type.')
+  }
+
+  disconnect () {
+    if (this.serialPort) {
+      return new Promise((resolve, reject) => {
+        this.serialPort.pause()
+        this.serialPort.flush(() => {
+          this.serialPort.close(() => {
+            this.emit('disconnect')
+            this.resolve(true)
+          })
+        })
+      })
+    }
   }
 }

@@ -53,13 +53,14 @@ function setData (newData) {
 screen.append(line)
 line.setData(data)
 
+const mw = new Mindwave(undefined, true) // true starts it quietly
+
 screen.key(['escape', 'q', 'C-c'], (ch, key) => {
+  mw.disconnect()
   process.exit(0)
 })
 
 screen.render()
-
-const mw = new Mindwave()
 
 // seperate eeg and all others, and send the data to their graphs
 mw.on('data', msg => {
