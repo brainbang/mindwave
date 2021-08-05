@@ -37,7 +37,7 @@
   "scripts": {
     "build": "npx microbundle",
     "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' npx jest",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "./index.js",
