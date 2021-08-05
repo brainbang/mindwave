@@ -95,6 +95,7 @@ export function toFloat32 (buffer) {
 export class Mindwave {
   constructor (path, quiet = false) {
     emitonoff(this)
+
     this.on('error', msg => {
       if (!quiet) {
         console.error('Error', msg)
@@ -130,7 +131,7 @@ export class Mindwave {
     if (platform === 'darwin') {
       path = '/dev/tty.MindWaveMobile-DevA'
     } else if (platform === 'win32') {
-      // TODO: need a better guess for windows port
+      // TODO: really need a better guess for windows port
       path = 'COM4'
     } else {
       path = '/dev/rfcomm0'
@@ -261,18 +262,18 @@ export class Mindwave {
   }
 
   // guess connection-type based on path, connect stream of serial bytes to parser
-  // MAC address = native bluetooth
-  // COM or /dev/X is native serial path
-  // no path triggers browser or serial (which guesses based on OS)
   connect (path = '') {
+    // MAC address = native bluetooth
     if (path.includes(':')) {
       return this.connectBt(path)
     }
 
+    // COM or /dev/X is native serial path
     if (path.startsWith('/dev') || path.startsWith('COM')) {
       return this.connectSerial(path)
     }
 
+    // no path triggers browser or serial (guessed based on OS)
     if (!path || path === '') {
       if (typeof process === 'undefined' || typeof process?.versions?.electron !== 'undefined') {
         return this.connectBtWeb()
