@@ -1,16 +1,20 @@
 {
   "name": "mindwave",
   "version": "0.3.0",
+  "type": "module",
   "author": {
     "email": "konsumer@jetboystudio.com",
     "name": "David Konsumer"
   },
+  "homepage": "https://github.com/konsumer/mindwave#readme",
+  "source": "./index.js",
+  "exports": "./dist/mindwave.modern.js",
+  "main": "./dist/mindwave.cjs",
+  "module": "./dist/mindwave.module.js",
+  "unpkg": "./dist/mindwave.umd.js",
   "dependencies": {
-    "@abandonware/bluetooth-hci-socket": "*",
-    "ble-serial": "^0.5.0",
-    "buffy": "0.0.5",
     "emitonoff": "^0.1.0",
-    "serialport": "^9.0.7"
+    "serialport": "^9.2.0"
   },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "keywords": [
@@ -19,7 +23,6 @@
     "neurosky"
   ],
   "license": "MIT",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/brainbang/mindwave.git"
@@ -27,5 +30,21 @@
   "devDependencies": {
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.10.1"
-  }
+  },
+  "scripts": {
+    "build": "npx microbundle",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' npx jest",
+    "prepublish": "npm run build"
+  },
+  "files": [
+    "./index.js",
+    "./dist/mindwave.cjs",
+    "./dist/mindwave.cjs.map",
+    "./dist/mindwave.modern.js",
+    "./dist/mindwave.modern.js.map",
+    "./dist/mindwave.module.js",
+    "./dist/mindwave.module.js.map",
+    "./dist/mindwave.umd.js",
+    "./dist/mindwave.umd.js.map"
+  ]
 }

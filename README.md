@@ -114,9 +114,5 @@ mw.connect('/dev/rfcomm0')
 ## TODO
 
 - Currently, only 9600 baud is supported, but eventually I will add support for high-resolution data (57600.)
-- [more opcodes](http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol#data_payload_structure)
 - More cross-platform testing, try to get around having to setup mac driver/rfcomm (maybe with node bluetooth serial lib & web bluetooth API)
-- wrap `connect` function for [web bluetooth](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API) and make it load serialport on-demand (will help with electron/etc packaging too, since it can use webapi) make an example "offline web app" for mobile, and a [neutrolino](https://github.com/neutralinojs/neutralinojs) or electron app for desktop
-- modern syntax (use `Buffer` and get rid of buffy)
-- pre-scale values so they work better together in a graph. maybe float:0.0 - 100.0?
 - write comparison C function for parsing buffers, and compile for wasm. Do comparioson-tests on real traffic from device. I can verify my js code this way (using reference C implementation in docs) and it might improve performance for js (basically just hook native or web bluetooth API to parsing wasm.) Once I can verify they match, I could try another language I like more, like assmeblyscript or rust (and test them against the js.)

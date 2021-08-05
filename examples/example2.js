@@ -1,8 +1,8 @@
 // this is a fancier example that uses blessed to make a graph in the terminal
 
-const Mindwave = require('./index.js')
-const blessed = require('blessed')
-const contrib = require('blessed-contrib')
+import { Mindwave } from '../index.js'
+import blessed from 'blessed'
+import contrib from 'blessed-contrib'
 
 const screen = blessed.screen()
 
@@ -15,6 +15,7 @@ const line = contrib.line({
 const bands = {
   signal: [100, 100, 100],
   blink: [130, 130, 130],
+  heartRate: [160, 130, 130],
 
   attention: [0, 255, 0],
   meditation: [255, 0, 0],
@@ -29,7 +30,7 @@ const bands = {
 }
 
 const size = 8
-const fields = ['signal', 'blink', 'attention', 'meditation', 'delta', 'theta', 'loAlpha', 'hiAlpha', 'loBeta', 'hiBeta', 'loGamma', 'midGamma']
+const fields = ['signal', 'blink', 'heartRate', 'attention', 'meditation', 'delta', 'theta', 'lowAlpha', 'highAlpha', 'lowBeta', 'highBeta', 'lowGamma', 'midGamma']
 const data = fields.map(title => ({
   title,
   x: [...new Array(size)].map(() => '|'),
@@ -41,7 +42,9 @@ const data = fields.map(title => ({
 function setData (newData) {
   Object.keys(newData).forEach(field => {
     const i = fields.indexOf(field)
-    data[i].y = [...data[i].y.slice(1), newData[field]]
+    if (i !== -1) {
+      data[i].y = [...data[i].y.slice(1), newData[field]]
+    }
   })
   line.setData(data)
   screen.render()
@@ -51,20 +54,20 @@ screen.append(line)
 line.setData(data)
 
 screen.key(['escape', 'q', 'C-c'], (ch, key) => {
-  return process.exit(0)
+  process.exit(0)
 })
 
 screen.render()
 
 const mw = new Mindwave()
-mw.on('eeg', (eeg) => setData(eeg))
-mw.on('signal', (signal) => setData({ signal }))
-mw.on('blink', (blink) => setData({ blink }))
-mw.on('attention', (attention) => setData({ attention }))
-mw.on('meditation', (meditation) => setData({ meditation }))
 
-// common device for mac
-// mw.connect('/dev/tty.MindWaveMobile-DevA')
+// seperate eeg and all others, and send the data to their graphs
+mw.on('data', msg => {
+  const { eeg, ...data } = msg
+  setData(msg)
+})
 
-// linux
-mw.connect('/dev/rfcomm0')
+mw.on('eeg', data => setData(data))
+
+// I am leaving off path, will try to let it guess, based on OS
+mw.connect()
