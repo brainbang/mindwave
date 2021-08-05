@@ -1,6 +1,7 @@
 // This is a class that represents several ways to connect to a Mindwave bluetooth headset
 
 import emitonoff from 'emitonoff'
+import ieee754 from 'ieee754'
 
 const BATTERY_LEVEL = 0x01 // battery-level 0-127
 const SIGNAL_LEVEL = 0x02 // 1: Quality (0-255)
@@ -15,8 +16,21 @@ const EEG_POWER = 0x81 // 32:  8 big-endian 4-byte IEEE 754 floating point value
 const ASIC_EEG_POWER = 0x83 // 24: 8 big-endian 3-byte unsigned integer values representing delta, theta, low-alpha, high-alpha, low-beta, high-beta, low-gamma, and mid-gamma EEG band power values
 const RRINTERVAL = 0x86 // 2: big-endian unsigned integer representing the milliseconds between two R-peaks
 
-const EXCODE = 0x55
 const SYNC = 0xAA
+
+const names = {
+  [BATTERY_LEVEL]: 'battery',
+  [SIGNAL_LEVEL]: 'signal',
+  [HEART_RATE]: 'heartRate',
+  [ATTENTION]: 'attention',
+  [MEDITATION]: 'meditation',
+  [RAW_8BIT]: 'raw8',
+  [RAW_MARKER]: 'marker',
+  [RAW_16BIT]: 'raw16',
+  [EEG_POWER]: 'eeg',
+  [ASIC_EEG_POWER]: 'eegAsic',
+  [RRINTERVAL]: 'interval'
+}
 
 // simple utility to scale a value to a range
 export function getScaledValue (value, sourceRangeMin, sourceRangeMax, targetRangeMin = 0, targetRangeMax = 100) {
@@ -25,26 +39,57 @@ export function getScaledValue (value, sourceRangeMin, sourceRangeMax, targetRan
   return (value - sourceRangeMin) * targetRange / sourceRange + targetRangeMin
 }
 
-// stupid, almost completely minimal unsigned integer 3-byte array, stored as Uint32Array
-export class UInt24Array {
-  static parse (data) {
-    return (
-      (data[0] << 16) |
-      (((1 << 16) - 1) & (data[1] << 8)) |
-      ((1 << 8) - 1) &
-      data[2]
-    )
+// These do byte-operations without Buffer (for browser)
+// lots of ideas from https://github.com/feross/buffer
+export function toInt16 (buffer) {
+  if ((buffer.length % 2) !== 0) {
+    throw new Error('Byte-length not divisible by 2.')
   }
+  const out = (new Int16Array(buffer.length / 2)).map((v, i) => {
+    const n = i * 2
+    const val = buffer[n + 1] | (buffer[n] << 8)
+    return (val & 0x8000) ? val | 0xFFFF0000 : val
+  })
+  return out.length === 1 ? out[0] : out
+}
 
-  static from (a) {
-    const out = new Uint32Array(a.length / 3)
-    let ai = 0
-    for (let i = 0; i < a.length; a += 3) {
-      out[ai] = UInt24Array.parse(a.slice(i, i + 3))
-      ai++
-    }
-    return out
+export function toUInt16 (buffer) {
+  if ((buffer.length % 2) !== 0) {
+    throw new Error('Byte-length not divisible by 2.')
   }
+  const out = (new Uint16Array(buffer.length / 2)).map((v, i) => {
+    const n = i * 2
+    return (buffer[n] << 8) | buffer[n + 1]
+  })
+  return out.length === 1 ? out[0] : out
+}
+
+export function toUInt24 (buffer) {
+  if ((buffer.length % 3) !== 0) {
+    throw new Error('Byte-length not divisible by 3.')
+  }
+  const out = (new Uint32Array(buffer.length / 3)).map((v, i) => {
+    const n = i * 3
+    let byteLength = 3
+    let val = buffer[n + --byteLength]
+    let mul = 1
+    while (byteLength > 0 && (mul *= 0x100)) {
+      val += buffer[n + --byteLength] * mul
+    }
+    return val
+  })
+  return out.length === 1 ? out[0] : out
+}
+
+export function toFloat32 (buffer) {
+  if ((buffer.length % 4) !== 0) {
+    throw new Error('Byte-length not divisible by 4.')
+  }
+  const out = (new Float32Array(buffer.length / 4)).map((v, i) => {
+    const n = i * 4
+    return ieee754.read(buffer, n, false, 23, 4)
+  })
+  return out.length === 1 ? out[0] : out
 }
 
 export class Mindwave {
@@ -96,107 +141,70 @@ export class Mindwave {
 
   // turn a valid buffer of commands into an object
   // this discards everything outside of the packet
-  static parse (msg) {
+  static parse (payload, normalize = true) {
     const out = {}
-    while (msg.length) {
-      // interim buffer for calculating bytes
-      let b
-      if (msg[0] === RAW_16BIT) {
-        b = Int32Array.from(msg.slice(1, 2))
+    while (payload.length > 0) {
+      const cmd = payload[0]
+      if (
+        cmd === BATTERY_LEVEL ||
+      cmd === SIGNAL_LEVEL ||
+      cmd === HEART_RATE ||
+      cmd === ATTENTION ||
+      cmd === MEDITATION ||
+      cmd === RAW_8BIT ||
+      cmd === RAW_MARKER
+      ) {
+        out[names[cmd]] = payload[1]
+        payload = payload.slice(2)
+      } else if (cmd === RAW_16BIT) {
+        out[names[cmd]] = toInt16(payload.slice(1, 3))
+        payload = payload.slice(3)
+      } else if (cmd === EEG_POWER) {
+        const data = toFloat32(payload.slice(1, 33))
+        out[names[cmd]] = {
+          delta: data[0],
+          theta: data[1],
+          lowAlpha: data[2],
+          highAlpha: data[3],
+          lowBeta: data[4],
+          highBeta: data[5],
+          lowGamma: data[6],
+          midGamma: data[7]
+        }
+        payload = payload.slice(33)
+      } else if (cmd === ASIC_EEG_POWER) {
+        const data = toUInt24(payload.slice(1, 25))
+        out[names[cmd]] = {
+          delta: data[0],
+          theta: data[1],
+          lowAlpha: data[2],
+          highAlpha: data[3],
+          lowBeta: data[4],
+          highBeta: data[5],
+          lowGamma: data[6],
+          midGamma: data[7]
+        }
+        payload = payload.slice(25)
+      } else if (cmd === RRINTERVAL) {
+        out[names[cmd]] = toUInt16(payload.slice(1, 3))
+        payload = payload.slice(3)
       }
-
-      if (msg[0] === EEG_POWER) {
-        b = Float32Array.from(msg.slice(1, 32))
-      }
-
-      if (msg[0] === ASIC_EEG_POWER) {
-        b = UInt24Array.from(msg.slice(1, 24))
-      }
-
-      if (msg[0] === RRINTERVAL) {
-        b = Uint16Array.from(msg.slice(1, 2))
-      }
-
-      switch (msg[0]) {
-        case BATTERY_LEVEL:
-          out.battery = getScaledValue(msg[1], 0, 127)
-          msg = msg.slice(1)
-          break
-
-        case SIGNAL_LEVEL:
-          out.signal = getScaledValue(msg[1], 0, 255)
-          msg = msg.slice(1)
-          break
-
-        case HEART_RATE:
-          out.heartRate = getScaledValue(msg[1], 0, 255)
-          msg = msg.slice(1)
-          break
-
-        case ATTENTION:
-          out.attention = msg[1]
-          msg = msg.slice(1)
-          break
-
-        case MEDITATION:
-          out.meditation = msg[1]
-          msg = msg.slice(1)
-          break
-
-        case RAW_8BIT:
-          out.raw8 = getScaledValue(msg[1], 0, 255)
-          msg = msg.slice(1)
-          break
-
-        case RAW_MARKER:
-          out.marker = msg[1] // should just be 0
-          msg = msg.slice(1)
-          break
-
-        case RAW_16BIT:
-          out.raw16 = getScaledValue(b[0], -32768, 32767)
-          msg = msg.slice(2)
-          break
-
-        case EEG_POWER:
-          // TODO: figure out better bounds for these values
-          out.eeg = {
-            delta: getScaledValue(b[0], -100000, 100000),
-            theta: getScaledValue(b[1], -100000, 100000),
-            lowAlpha: getScaledValue(b[2], -100000, 100000),
-            highAlpha: getScaledValue(b[3], -100000, 100000),
-            lowBeta: getScaledValue(b[4], -100000, 100000),
-            highBeta: getScaledValue(b[5], -100000, 100000),
-            lowGamma: getScaledValue(b[6], -100000, 100000),
-            midGamma: getScaledValue(b[7], -100000, 100000)
-          }
-          msg = msg.slice(32)
-          break
-
-        case ASIC_EEG_POWER:
-          // TODO: figure out better bounds for these values
-          out.eeg_asic = {
-            delta: getScaledValue(b[0], 0, 100000),
-            theta: getScaledValue(b[1], 0, 100000),
-            lowAlpha: getScaledValue(b[2], 0, 100000),
-            highAlpha: getScaledValue(b[3], 0, 100000),
-            lowBeta: getScaledValue(b[4], 0, 100000),
-            highBeta: getScaledValue(b[5], 0, 100000),
-            lowGamma: getScaledValue(b[6], 0, 100000),
-            midGamma: getScaledValue(b[7], 0, 100000)
-          }
-          msg = msg.slice(24)
-          break
-
-        case RRINTERVAL:
-          out.rInterval = getScaledValue(b[0], 0, 65535)
-          msg = msg.slice(2)
-          break
-
-        default:
-          // I dunno what this is, just chop a byte off to keep it rolling
-          msg = msg.slice(1)
-      }
+    }
+    if (normalize) {
+      Object.keys(out).forEach(k => {
+        if (k === names[BATTERY_LEVEL]) {
+          out[k] = getScaledValue(out[k], 0, 127)
+        } else if (k === names[SIGNAL_LEVEL]) {
+          out[k] = getScaledValue(out[k], 0, 255)
+        } else if (k === names[HEART_RATE]) {
+          out[k] = getScaledValue(out[k], 0, 255)
+        } else if (k === names[RAW_8BIT]) {
+          out[k] = getScaledValue(out[k], 0, 255)
+        } else if (k === names[RAW_16BIT]) {
+          out[k] = getScaledValue(out[k], -32768, 32767)
+        }
+      // TODO: range for eeg values?
+      })
     }
     return out
   }
@@ -215,10 +223,10 @@ export class Mindwave {
   }
 
   // use serialport API, connect stream of serial bytes to parser, path is optional and guessed based on OS if not provided
-  async connectSerial (port, baud = 9600) {
-    this.baud = baud
+  async connectSerial (port, baudRate = 57600) {
+    this.baudRate = baudRate
 
-    if (baud !== 9600 && baud !== 57600) {
+    if (baudRate !== 9600 && baudRate !== 57600) {
       return this.emit('error', 'Invalid baud. Set to 9600 or 57600')
     }
 
@@ -231,30 +239,19 @@ export class Mindwave {
 
     const SerialPort = (await import('@serialport/stream')).default
     SerialPort.Binding = (await import('@serialport/bindings')).default
-    const buffy = (await import('buffy')).default
 
-    this.serialPort = new SerialPort(port, { baudRate: this.baud, autoOpen: false })
-
-    this.serialPort.open((err) => {
-      if (err) {
-        this.emit('errpr', `Error opening ${port}`)
-      } else {
-        this.emit('connect')
-        const reader = buffy.createReader()
-
-        this.serialPort.on('data', data => {
-          console.log('SERIAL')
-          reader.write(data)
-        })
-
-        reader.on('data', function () {
-          console.log('READER')
-          while (reader.bytesAhead() >= 2) {
-            console.log(reader.uint8(), reader.uint8())
-          }
-        })
-      }
-    })
+    const Delimiter = (await import('@serialport/parser-delimiter')).default
+    this.serialPort = new SerialPort(port, { baudRate })
+    this.serialPort
+      .pipe(new Delimiter({ delimiter: Buffer.from([SYNC, SYNC]) }))
+      .on('data', data => {
+        const len = data[0]
+        const payload = data.slice(1, len + 1)
+        const chk = data[len + 1]
+        if (chk === Mindwave.checksum(payload)) {
+          this.emit('data', Mindwave.parse(payload))
+        }
+      })
   }
 
   // guess connection-type based on path, connect stream of serial bytes to parser

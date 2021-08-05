@@ -4,7 +4,6 @@ exports[`parse buffer from docs 1`] = `
 Object {
   "attention": 18,
   "battery": 99.21259842519684,
-  "length": 8,
   "meditation": 96,
   "signal": 12.549019607843137,
 }

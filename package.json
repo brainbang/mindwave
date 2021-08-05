@@ -15,9 +15,7 @@
   "dependencies": {
     "@serialport/bindings": "^9.2.0",
     "@serialport/parser-delimiter": "^9.0.7",
-    "@serialport/stream": "^9.0.7",
-    "buffy": "^0.0.5",
-    "emitonoff": "^0.1.0"
+    "@serialport/stream": "^9.0.7"
   },
   "description": "A cross-platform driver for bluetooth Neurosky Mindwave headsets",
   "keywords": [
@@ -32,7 +30,9 @@
   },
   "devDependencies": {
     "blessed": "^0.1.81",
-    "blessed-contrib": "^4.10.1"
+    "blessed-contrib": "^4.10.1",
+    "emitonoff": "^0.1.0",
+    "ieee754": "^1.2.1"
   },
   "scripts": {
     "build": "npx microbundle",
