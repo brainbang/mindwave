@@ -1,5 +1,6 @@
 /* global describe, test, expect */
-import { Mindwave, getScaledValue, toUInt24, toUInt16, toInt16, toFloat32 } from './index.js'
+import { Mindwave } from './index.js'
+import { getScaledValue, toUInt24, toUInt16, toInt16, toFloat32 } from './math.js'
 
 // this was the example in the docs
 const testBuffer = Buffer.from([
@@ -13,22 +14,24 @@ const testBuffer = Buffer.from([
   0x60 // eSense Meditation level of 96%
 ])
 
-test('parse buffer from docs', () => {
-  expect(Mindwave.parse(testBuffer)).toMatchSnapshot()
-})
-
-test('guess correct serial-port', async () => {
-  expect(await Mindwave.getSerialPath('linux')).toBe('/dev/rfcomm0')
-  expect(await Mindwave.getSerialPath('nooneeverheardof')).toBe('/dev/rfcomm0')
-  expect(await Mindwave.getSerialPath('darwin')).toBe('/dev/tty.MindWaveMobile-DevA')
-  expect(await Mindwave.getSerialPath('win32')).toBe('COM4')
-})
-
-describe('math', () => {
+describe('mindwave', () => {
   test('calculate checksum', () => {
     expect(Mindwave.checksum(testBuffer)).toBe(0xE3)
   })
 
+  test('parse buffer from docs', () => {
+    expect(Mindwave.parse(testBuffer)).toMatchSnapshot()
+  })
+
+  test('guess correct serial-port', async () => {
+    expect(await Mindwave.getSerialPath('linux')).toBe('/dev/rfcomm0')
+    expect(await Mindwave.getSerialPath('nooneeverheardof')).toBe('/dev/rfcomm0')
+    expect(await Mindwave.getSerialPath('darwin')).toBe('/dev/tty.MindWaveMobile-DevA')
+    expect(await Mindwave.getSerialPath('win32')).toBe('COM4')
+  })
+})
+
+describe('math', () => {
   test('scale values correctly', () => {
     expect(getScaledValue(50, 0, 100)).toBe(50)
     expect(getScaledValue(50, 0, 200)).toBe(25)

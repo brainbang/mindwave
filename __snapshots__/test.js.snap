@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`parse buffer from docs 1`] = `
+exports[`mindwave parse buffer from docs 1`] = `
 Object {
   "attention": 18,
   "battery": 99.21259842519684,
