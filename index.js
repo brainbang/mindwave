@@ -242,6 +242,8 @@ export class Mindwave {
 
     const Delimiter = (await import('@serialport/parser-delimiter')).default
     this.serialPort = new SerialPort(port, { baudRate })
+    // Delimite packets on SYNC+SYNC and feed to parser
+    // then trigger data message (for packet object) and individual messages
     this.serialPort
       .pipe(new Delimiter({ delimiter: Buffer.from([SYNC, SYNC]) }))
       .on('data', data => {
@@ -249,7 +251,11 @@ export class Mindwave {
         const payload = data.slice(1, len + 1)
         const chk = data[len + 1]
         if (chk === Mindwave.checksum(payload)) {
-          this.emit('data', Mindwave.parse(payload))
+          const data = Mindwave.parse(payload)
+          this.emit('data', data)
+          Object.keys(data).forEach(k => {
+            this.emit(k, data[k])
+          })
         }
       })
   }
