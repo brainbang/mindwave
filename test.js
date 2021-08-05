@@ -41,4 +41,5 @@ test('scale values correctly', () => {
   expect(getScaledValue(50, 100, 200)).toBe(-50)
   expect(getScaledValue(50, 0, 100, 100, 200)).toBe(150)
   expect(getScaledValue(50, 0, 100, 0, 300)).toBe(150)
+  expect(getScaledValue(0, -100, 100)).toBe(50)
 })
