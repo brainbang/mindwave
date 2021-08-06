@@ -49,7 +49,10 @@ const mw = new Mindwave()
 //   console.log('rInterval', data)
 // })
 
-mw.on('data', console.log)
+// all messages
+// mw.on('data', console.log)
+
+mw.on('attention', val => console.log('attention', val))
 
 process.on('exit', () => {
   mw.disconnect()

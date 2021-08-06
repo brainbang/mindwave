@@ -1,6 +1,6 @@
 /* global describe, test, expect */
-import { Mindwave } from './index.js'
-import { getScaledValue, toUInt24, toUInt16, toInt16, toFloat32 } from './math.js'
+import { Mindwave } from '../index.js'
+import { getScaledValue, toUInt24, toUInt16, toInt16, toFloat32 } from '../math.js'
 
 // this was the example in the docs
 // since serial splits message up correctly, I just include the main packet

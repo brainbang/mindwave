@@ -88,12 +88,12 @@ export class Mindwave {
       const cmd = payload[0]
       if (
         cmd === BATTERY_LEVEL ||
-      cmd === SIGNAL_LEVEL ||
-      cmd === HEART_RATE ||
-      cmd === ATTENTION ||
-      cmd === MEDITATION ||
-      cmd === RAW_8BIT ||
-      cmd === RAW_MARKER
+        cmd === SIGNAL_LEVEL ||
+        cmd === HEART_RATE ||
+        cmd === ATTENTION ||
+        cmd === MEDITATION ||
+        cmd === RAW_8BIT ||
+        cmd === RAW_MARKER
       ) {
         out[names[cmd]] = payload[1]
         payload = payload.slice(2)
@@ -129,6 +129,9 @@ export class Mindwave {
       } else if (cmd === RRINTERVAL) {
         out[names[cmd]] = toUInt16(payload.slice(1, 3))
         payload = payload.slice(3)
+      } else {
+        // something went wrong, zero payload
+        payload = []
       }
     }
     if (normalize) {
@@ -192,11 +195,15 @@ export class Mindwave {
         const payload = data.slice(1, len + 1)
         const chk = data[len + 1]
         if (chk === Mindwave.checksum(payload)) {
-          const data = Mindwave.parse(payload)
-          this.emit('data', data)
-          Object.keys(data).forEach(k => {
-            this.emit(k, data[k])
-          })
+          try {
+            const data = Mindwave.parse(payload)
+            this.emit('data', data)
+            Object.keys(data).forEach(k => {
+              this.emit(k, data[k])
+            })
+          } catch (e) {
+            this.emit('error', e.messsage)
+          }
         }
       })
   }
