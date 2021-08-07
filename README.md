@@ -6,6 +6,44 @@ A cross-platform driver for bluetooth Neurosky Mindwave headsets.
 
 There are 2 examples included, and if you'd like to see an example GUI project, check out [mindgraph](https://github.com/brainbang/mindgraph).
 
+
+# WARNING
+
+I created a C version (based on [docs](http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol), compiled it to wasm & native, and compared the results between wasm & native, and js. Currently C implementation does not match my javascript:
+
+```
+Wasmer
+
+real  0m0.328s
+user  0m0.168s
+sys 0m0.165s
+136777 test/test_wasmer.txt
+
+WASI (node)
+
+real  0m0.134s
+user  0m0.138s
+sys 0m0.016s
+136777 test/test_wasijs.txt
+
+Native (C)
+
+real  0m0.040s
+user  0m0.034s
+sys 0m0.010s
+136777 test/test_c.txt
+
+Plain JS
+
+real  0m0.993s
+user  0m0.857s
+sys 0m0.207s
+139937 test/test_js.txt
+```
+
+But I'll be working on fixing it, and update this once I get it squared away. If I can't figure it out, I may just need to parse in C (and use wasm.)
+
+
 ## usage
 
 ### hardware

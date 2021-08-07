@@ -2,14 +2,20 @@
 // http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol
 // It had some errors I fixed, then structured it for my own code
 
-// compile with
-// gcc test/parse.c -o testparse
+// NATIVE
+// gcc test/parse.c -o test/testc
+// cat test/log.bin | ./test/testc
+// 0.09s user 0.13s system 53% cpu 0.426 total
 
-// I couldn't get it to compile to WASM correctly
-// Read more about wasm/wasi here:
-// https://developer.mozilla.org/en-US/docs/WebAssembly/C_to_wasm
-// https://dev.to/sendilkumarn/loading-wasm-as-esm-in-nodejs-2gdb
-// https://www.dynamsoft.com/codepool/use-webassembly-node-js.html
+// WASM
+// curl https://raw.githubusercontent.com/wasienv/wasienv/master/install.sh | sh
+// wasicc test/parse.c -o test/parse.wasm
+
+// cat test/log.bin | ~/.wasmer/bin/wasmer test/parse.wasm
+// 0.16s user 0.15s system 61% cpu 0.493 total
+
+// cat test/log.bin | node --no-warnings --experimental-wasi-unstable-preview1 test/runwasi.js
+// 0.23s user 0.15s system 68% cpu 0.560
 
 #include <stdio.h>
  
@@ -74,15 +80,7 @@ int main( int argc, char **argv ) {
     unsigned char c;
 
     FILE *stream = 0;
-
-    if (argc == 1) {
-      printf("Usage: testparse <INPUT>\n");
-      return 1;
-    }
-
-    printf("Opening %s for parsing.", argv[1]);
-    
-    stream = fopen( argv[1], "r" );
+    stream = stdin;
 
     // Loop forever, parsing one Packet per loop...
     while ( fread( &c, 1, 1, stream ) ) {

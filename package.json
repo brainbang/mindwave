@@ -29,7 +29,6 @@
     "url": "https://github.com/brainbang/mindwave.git"
   },
   "devDependencies": {
-    "benchmark": "^2.1.4",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.10.1",
     "emitonoff": "^0.1.0",
