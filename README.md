@@ -13,32 +13,30 @@ I created a C version (based on [docs](http://developer.neurosky.com/docs/doku.p
 
 ```
 Wasmer
-
-real  0m0.328s
-user  0m0.168s
-sys 0m0.165s
-136777 test/test_wasmer.txt
+real  0m0.352s
+user  0m0.234s
+sys 0m0.158s
+136777 test_wasmer.txt
 
 WASI (node)
-
-real  0m0.134s
-user  0m0.138s
-sys 0m0.016s
-136777 test/test_wasijs.txt
+real  0m0.131s
+user  0m0.141s
+sys 0m0.010s
+136777 test_wasijs.txt
 
 Native (C)
-
-real  0m0.040s
-user  0m0.034s
-sys 0m0.010s
-136777 test/test_c.txt
+real  0m0.039s
+user  0m0.039s
+sys 0m0.004s
+136777 test_c.txt
 
 Plain JS
+real  0m0.992s
+user  0m0.843s
+sys 0m0.221s
+139937 test_js.txt
 
-real  0m0.993s
-user  0m0.857s
-sys 0m0.207s
-139937 test/test_js.txt
+Files test_c.txt and test_js.txt differ
 ```
 
 But I'll be working on fixing it, and update this once I get it squared away. If I can't figure it out, I may just need to parse in C (and use wasm.)
