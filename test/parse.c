@@ -1,10 +1,15 @@
 // this is a reference implementation of parsing, in C
-// eventually it may be compiled for wasm
+// http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol
+// It had some errors I fixed, then structured it for my own code
+
+// compile with
 // gcc test/parse.c -o testparse
 
-// http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol
-// I had some errors I fixed, then structured it for my own code
-
+// I couldn't get it to compile to WASM correctly
+// Read more about wasm/wasi here:
+// https://developer.mozilla.org/en-US/docs/WebAssembly/C_to_wasm
+// https://dev.to/sendilkumarn/loading-wasm-as-esm-in-nodejs-2gdb
+// https://www.dynamsoft.com/codepool/use-webassembly-node-js.html
 
 #include <stdio.h>
  
@@ -12,7 +17,9 @@
 #define EXCODE 0x55
 #define RAW_16BIT 0x80
 
-int parsePayload( unsigned char *payload, unsigned char pLength ) {
+// parse a single payload
+// payload should already be stripped of SYNC,SYNC and checksummed
+extern void parsePayload( unsigned char *payload, unsigned char pLength ) {
     unsigned char bytesParsed = 0;
     unsigned char code;
     unsigned char length;
@@ -36,7 +43,7 @@ int parsePayload( unsigned char *payload, unsigned char pLength ) {
       }
 
       // use extendedCodeLevel, code, payload & length to handle data
-      printf( "EXCODE level: %d CODE: 0x%02X length: %d DATA: ", extendedCodeLevel, code, length );
+      printf( "CODE: 0x%02X EXCODE: %d DATA: ", code, extendedCodeLevel );
       for ( i=0; i<length; i++ ) {
         printf( " %02X", payload[bytesParsed+i] & 0xFF );
       }
@@ -45,12 +52,10 @@ int parsePayload( unsigned char *payload, unsigned char pLength ) {
       // Increment the bytesParsed by the length of the Data Value */
       bytesParsed += length;
     }
- 
-    return( 0 );
 }
 
 // Compute [PAYLOAD...] chksum
-int getChecksum (unsigned char payload[256], unsigned char pLength) {
+extern int getChecksum (unsigned char payload[256], unsigned char pLength) {
   int checksum = 0;
   unsigned char i;
   
@@ -80,9 +85,8 @@ int main( int argc, char **argv ) {
     stream = fopen( argv[1], "r" );
 
     // Loop forever, parsing one Packet per loop...
-    while ( 1 ) {
-      // Synchronize on 2 [SYNC] bytes
-      fread( &c, 1, 1, stream );
+    while ( fread( &c, 1, 1, stream ) ) {
+      // check for double-SYNC
       if ( c != SYNC ) {
         continue;
       }
@@ -119,5 +123,6 @@ int main( int argc, char **argv ) {
       parsePayload( payload, pLength );
     }
  
+    fclose(stream);
     return 0;
 }
